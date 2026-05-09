@@ -6,9 +6,11 @@ import jwtConfig from './config/Jwt';
 import { AuthController } from './controller/Auth';
 import { DocsController } from './controller/Docs';
 import { LinhaModule } from './module/Linha';
+import { OperadoraModule } from './module/Operadora';
 import { SeedService } from './service/Seed';
 import { AuthService } from './service/Auth';
 import { JwtModule } from '@nestjs/jwt';
+import { OperadoraLinhaModule } from './module/OperadoraLinha';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { JwtModule } from '@nestjs/jwt';
       global: true,
     }),
     LinhaModule,
+    OperadoraModule,
+    OperadoraLinhaModule,
   ],
   controllers: [AuthController, DocsController],
   providers: [SeedService, AuthService],
