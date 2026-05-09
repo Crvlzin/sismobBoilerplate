@@ -1,4 +1,6 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Operadora } from './Operadora';
+import { Linha } from './Linha';
 
 @Entity({ name: 'tab_operadora_linha', schema: 'dados_mobilidade' })
 export class OperadoraLinha {
@@ -13,4 +15,13 @@ export class OperadoraLinha {
 
     @Column({ name: 'dt_ultima_atualizacao_operacional', nullable: true })
     dataAtualizacaoOperacional: Date;
+
+    @ManyToOne(() => Operadora)
+    @JoinColumn({ name: 'id_operadora' })
+    operadora: Operadora;
+
+    @ManyToOne(() => Linha)
+    @JoinColumn({ name: 'id_linha' })
+    linha: Linha;
 }
+

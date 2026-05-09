@@ -11,6 +11,7 @@ import { SeedService } from './service/Seed';
 import { AuthService } from './service/Auth';
 import { JwtModule } from '@nestjs/jwt';
 import { OperadoraLinhaModule } from './module/OperadoraLinha';
+import { ItinerarioModule } from './module/Itinerario';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { OperadoraLinhaModule } from './module/OperadoraLinha';
     LinhaModule,
     OperadoraModule,
     OperadoraLinhaModule,
+    ItinerarioModule,
   ],
   controllers: [AuthController, DocsController],
   providers: [SeedService, AuthService],

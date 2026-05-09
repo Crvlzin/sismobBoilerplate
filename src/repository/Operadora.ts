@@ -13,10 +13,10 @@ export class OperadoraRepository extends Repository<Operadora> {
       SELECT 
         id_operadora as "id", 
         nm_operadora as "nome", 
-        nm_cpf_cnpj as "documento", 
-        dataregistro as "data de registro", 
-        inicio_autorga as "inicio", 
-        fim_autorga as "fim" 
+        nm_cpf_cnpj as "num_cpf_cnpj", 
+        dataregistro as "dataRegistro", 
+        inicio_autorga as "datainicio", 
+        fim_autorga as "datafim" 
       FROM dados_mobilidade.tab_operadora
       WHERE 1=1
     `;

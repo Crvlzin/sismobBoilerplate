@@ -13,8 +13,8 @@ export class OperadoraLinhaRepository extends Repository<OperadoraLinha> {
       SELECT 
         id_operadora as "id_operadora", 
         id_linha as "id_linha", 
-        dataregistro as "dataregistro", 
-        dt_ultima_atualizacao_operacional as "ultimaatualizacao" 
+        dataregistro as "dataRegistro", 
+        dt_ultima_atualizacao_operacional as "dataAtualizacaoOperacional" 
       FROM dados_mobilidade.tab_operadora_linha
       WHERE 1=1
     `;
