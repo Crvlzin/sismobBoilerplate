@@ -1,4 +1,6 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { OperadoraLinha } from './OperadoraLinha'
+import { Itinerario } from './Itinerario'
 
 @Entity({ name: 'tab_linha', schema: 'dados_mobilidade' })
 export class Linha {
@@ -25,4 +27,10 @@ export class Linha {
 
   @Column({ name: 'dt_final_tarifa', type: 'date', nullable: true })
   dataFinalTarifa: Date;
+
+  @OneToMany(() => OperadoraLinha, (ol) => ol.linha)
+  operadoras: OperadoraLinha[];
+
+  @OneToMany(() => Itinerario, (i) => i.linha)
+  itinerarios: Itinerario[];
 }

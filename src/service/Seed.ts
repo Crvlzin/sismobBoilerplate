@@ -1,47 +1,58 @@
 import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
-import * as path from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SeedService.name);
 
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async onApplicationBootstrap() {
-    await this.seedTabLinha();
+    this.logger.log('Iniciando processo de verificação de SEEDS...');
+
+    // A ordem importa por causa das Foreign Keys!
+    await this.runSeed('tab_operadora', 'tab_operadora.sql');
+    await this.runSeed('tab_linha', 'tab_linha.sql');
+    await this.runSeed('tab_operadora_linha', 'tab_operadora_linha.sql');
+    await this.runSeed('tab_itinerario', 'tab_itinerario.sql');
+
+    this.logger.log('Processo de SEEDS finalizado.');
   }
 
-  private async seedTabLinha() {
+  /**
+   * Método genérico para executar um arquivo SQL se a tabela estiver vazia
+   */
+  private async runSeed(tableName: string, fileName: string) {
     try {
-      // Verificar se a tabela já tem dados para não duplicar
-      const countResult = await this.dataSource.query('SELECT COUNT(*) as total FROM dados_mobilidade.tab_linha');
+      // 1. Verifica se a tabela já tem dados
+      const countResult = await this.dataSource.query(`SELECT COUNT(*) as total FROM dados_mobilidade.${tableName}`);
       const total = parseInt(countResult[0].total, 10);
 
       if (total > 0) {
-        this.logger.log('Tabela tab_linha já contém dados. Pulando seed.');
+        this.logger.log(`Tabela ${tableName} já contém ${total} registros. Pulando.`);
         return;
       }
 
-      this.logger.log('Iniciando seed da tabela tab_linha...');
-
-      // Caminho do arquivo SQL (Robusto: funciona em qualquer lugar)
-      const sqlPath = require('path').join(process.cwd(), 'src', 'config', 'tab_linha.sql');
-      
-      if (!require('fs').existsSync(sqlPath)) {
-        this.logger.error(`Arquivo SQL não encontrado em: ${sqlPath}`);
+      // 2. Localiza o arquivo SQL
+      const sqlPath = path.join(process.cwd(), 'src', 'config', fileName);
+      if (!fs.existsSync(sqlPath)) {
+        this.logger.error(`Arquivo não encontrado: ${sqlPath}`);
         return;
       }
 
-      const sqlContent = require('fs').readFileSync(sqlPath, 'utf8');
-      
-      // O arquivo pode conter múltiplos comandos. No Postgres, podemos executar o bloco todo.
+      this.logger.log(`Lendo e executando ${fileName} para a tabela ${tableName}...`);
+
+      // 3. Lê e executa o conteúdo (UTF-8)
+      const sqlContent = fs.readFileSync(sqlPath, 'utf8');
+
+      // Usamos uma transação para garantir que ou vai tudo ou não vai nada
       await this.dataSource.query(sqlContent);
 
-      this.logger.log('Seed da tabela tab_linha concluído com sucesso!');
+      this.logger.log(`✅ Tabela ${tableName} semeada com sucesso!`);
     } catch (error) {
-      this.logger.error(`Erro ao realizar seed da tabela tab_linha: ${error.message}`);
+      this.logger.error(`❌ Erro ao semear ${tableName}: ${error.message}`);
     }
   }
 }
