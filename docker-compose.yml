@@ -29,5 +29,23 @@ services:
     depends_on:
       - sismob-db
 
+  # Backend Application
+  sismob-app:
+    build: .
+    container_name: sismob-backend
+    restart: always
+    ports:
+      - "8097:8097"
+    environment:
+      DB_HOST: sismob-postgres # Using the container_name of the DB service
+      DB_PORT: 5432
+      DB_SERVICE_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: SISMOB_SECRET_KEY_2026
+      APP_PREFIX: api
+    depends_on:
+      - sismob-db
+
 volumes:
   sismob_pgdata:
